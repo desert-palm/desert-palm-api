@@ -1,4 +1,4 @@
-## Desert Shop API
+## Desert Palm API
 
 E-commerce platform API
 
@@ -11,26 +11,33 @@ $ npm install
 ## Running the app
 
 ```bash
-# development
+# Development
 $ npm run start
 
-# watch mode
+# Watch mode
 $ npm run start:dev
 
-# production mode
+# Production mode
 $ npm run start:prod
+```
+
+## Docker
+
+```bash
+# Builds, (re)creates, starts containers
+$ docker-compose up
 ```
 
 ## Test
 
 ```bash
-# unit tests
+# Unit tests
 $ npm run test
 
-# e2e tests
+# E2E tests
 $ npm run test:e2e
 
-# test coverage
+# Test coverage
 $ npm run test:cov
 ```
 
