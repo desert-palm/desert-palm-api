@@ -5,20 +5,24 @@ E-commerce platform API
 ## Installation
 
 ```bash
-$ npm install
+# Install Yarn globally
+$ npm install -g yarn
+
+# Install project dependencies
+$ cd desert-palm-api && yarn install
 ```
 
 ## Running the app
 
 ```bash
 # Development
-$ npm run start
+$ yarn start
 
 # Watch mode
-$ npm run start:dev
+$ yarn start:dev
 
 # Production mode
-$ npm run start:prod
+$ yarn start:prod
 ```
 
 ## Docker
@@ -32,13 +36,13 @@ $ docker-compose up
 
 ```bash
 # Unit tests
-$ npm run test
+$ yarn test
 
 # E2E tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # Test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Prettier and ESLint
