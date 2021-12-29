@@ -28,8 +28,8 @@ $ yarn start:prod
 ## Docker
 
 ```bash
-# Builds, (re)creates, starts containers
-$ docker-compose up
+# Builds and starts containers
+$ docker-compose build && docker-compose up
 ```
 
 ## Test
