@@ -14,7 +14,7 @@ const ormconfig: TypeOrmModuleOptions = {
   cli: {
     migrationsDir: "migrations",
   },
-  synchronize: false,
+  synchronize: process.env.NODE_ENV === "development",
 };
 
 export default ormconfig;

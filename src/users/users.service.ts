@@ -19,7 +19,7 @@ export class UsersService {
   }
 
   async createUser(data: Partial<User>): Promise<User> {
-    return this.usersRepository.create(data);
+    return this.usersRepository.save(data);
   }
 
   async updateUser(userId: string, data: Partial<User>): Promise<UpdateResult> {
