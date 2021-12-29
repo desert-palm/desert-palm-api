@@ -5,43 +5,36 @@ import {
   Get,
   Param,
   Patch,
-  Post,
+  UseGuards,
 } from "@nestjs/common";
-import { DeleteResult, UpdateResult } from "typeorm";
-import { User } from "./user.entity";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { UsersService } from "./users.service";
 
+@UseGuards(JwtAuthGuard)
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async getUsers(): Promise<User[]> {
+  async getUsers() {
     return this.usersService.getUsers();
   }
 
   @Get(":userId")
-  async getUser(@Param("userId") userId: string): Promise<User> {
-    return this.usersService.getUser(userId);
-  }
-
-  @Post()
-  async createUser(
-    @Body() body: { name: string; email: string }
-  ): Promise<User> {
-    return this.usersService.createUser(body);
+  async getUser(@Param("userId") userId: string) {
+    return this.usersService.getUser({ where: { id: userId } });
   }
 
   @Patch(":userId")
   async updateUser(
     @Param("userId") userId: string,
     @Body() body: { name: string; email: string }
-  ): Promise<UpdateResult> {
+  ) {
     return this.usersService.updateUser(userId, body);
   }
 
   @Delete(":userId")
-  async deleteUser(@Param("userId") userId: string): Promise<DeleteResult> {
+  async deleteUser(@Param("userId") userId: string) {
     return this.usersService.deleteUser(userId);
   }
 }
