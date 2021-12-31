@@ -7,9 +7,12 @@ import {
   Patch,
   UseGuards,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UpdateUserDto } from "./dto/updateUser.dto";
 import { UsersService } from "./users.service";
 
+@ApiTags("users")
 @UseGuards(JwtAuthGuard)
 @Controller("users")
 export class UsersController {
@@ -28,13 +31,13 @@ export class UsersController {
   @Patch(":userId")
   async updateUser(
     @Param("userId") userId: string,
-    @Body() body: { name: string; email: string }
+    @Body() body: UpdateUserDto
   ) {
     return this.usersService.updateUser(userId, body);
   }
 
   @Delete(":userId")
   async deleteUser(@Param("userId") userId: string) {
-    return this.usersService.deleteUser(userId);
+    this.usersService.deleteUser(userId);
   }
 }

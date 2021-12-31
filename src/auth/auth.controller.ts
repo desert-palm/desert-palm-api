@@ -1,12 +1,15 @@
 import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { hash } from "bcrypt";
 import { Request } from "express";
+import { CreateUserDto } from "../users/dto/createUser.dto";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth.guard";
 
 const SALT_ROUNDS = 10;
 
+@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -21,9 +24,7 @@ export class AuthController {
   }
 
   @Post("signup")
-  async signUp(
-    @Body() body: { name: string; email: string; password: string }
-  ) {
+  async signUp(@Body() body: CreateUserDto) {
     const { password, ...rest } = body;
     const passwordHash = await hash(password, SALT_ROUNDS);
 
