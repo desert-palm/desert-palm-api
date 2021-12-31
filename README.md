@@ -2,6 +2,12 @@
 
 E-commerce platform API
 
+Tech stack:
+
+- NestJS
+- TypeORM
+- Docker
+
 ## Installation
 
 ```bash
@@ -9,7 +15,10 @@ E-commerce platform API
 $ npm install -g yarn
 
 # Install project dependencies
-$ cd desert-palm-api && yarn install
+$ cd desert-palm-api && yarn
+
+# Add .env file and edit as needed
+$ cp .env.example .env
 ```
 
 ## Running the app
@@ -28,7 +37,7 @@ $ yarn start:prod
 ## Docker
 
 ```bash
-# Builds and starts containers
+# Build and start containers
 $ docker-compose build && docker-compose up
 ```
 

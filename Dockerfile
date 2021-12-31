@@ -1,4 +1,6 @@
-FROM node:16.13-alpine AS development
+FROM node:16.13-alpine AS build_stage
+
+RUN apk add --update python3 build-base
 
 WORKDIR /usr/src/app
 
@@ -10,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:16.13-alpine AS production
+FROM node:16.13-alpine AS runtime_stage
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -23,6 +25,6 @@ RUN npm install --only=production
 
 COPY . .
 
-COPY --from=development /usr/src/app/dist ./dist
+COPY --from=build_stage /usr/src/app/dist ./dist
 
 CMD ["node", "dist/main"]
