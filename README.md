@@ -32,6 +32,8 @@ $ yarn start:dev
 
 # Production mode
 $ yarn start:prod
+
+# Go to http://localhost:3000/api to view and interact with the API
 ```
 
 ## Docker
