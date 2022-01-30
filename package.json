@@ -1,10 +1,9 @@
 {
   "name": "desert-palm-api",
-  "version": "0.0.1",
-  "description": "E-commerce platform API",
   "author": "Forrest Wilkins",
-  "private": true,
-  "license": "UNLICENSED",
+  "description": "E-commerce platform API built with NestJS and TypeORM 🏜🌴",
+  "license": "GPL-3.0",
+  "version": "0.0.1",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -30,6 +29,7 @@
     "@nestjs/swagger": "^5.1.5",
     "@nestjs/typeorm": "^8.0.2",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
@@ -85,13 +85,13 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "lint-staged": {
-    "src/**/*.{ts,tsx}": "yarn lint:fix",
-    "*.{ts,tsx}": "eslint --cache --fix"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "yarn lint:fix",
+    "*.{ts,tsx,js,json,md}": "yarn format"
   }
 }
