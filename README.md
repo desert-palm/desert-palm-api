@@ -1,12 +1,6 @@
 ## Desert Palm API
 
-E-commerce platform API
-
-Tech stack:
-
-- NestJS
-- TypeORM
-- Docker
+E-commerce platform API built with NestJS and TypeORM 🏜🌴
 
 ## Installation
 
@@ -32,15 +26,15 @@ $ yarn start:dev
 
 # Production mode
 $ yarn start:prod
-
-# Go to http://localhost:3000/api to view and interact with the API
 ```
+
+Open [http://localhost:3100/api](http://localhost:3100/api) with your browser to view and interact with the API.
 
 ## Docker
 
 ```bash
 # Build and start containers
-$ docker-compose build && docker-compose up
+$ docker-compose up
 ```
 
 ## Test
