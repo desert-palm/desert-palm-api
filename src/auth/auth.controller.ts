@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { hash } from "bcrypt";
 import { Request } from "express";
 import { CreateUserDto } from "../users/dto/createUser.dto";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
+import { JwtAuthGuard } from "./jwt-auth.guard";
 import { LocalAuthGuard } from "./local-auth.guard";
 
 const SALT_ROUNDS = 10;
@@ -34,5 +35,11 @@ export class AuthController {
     });
 
     return this.authService.login(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async checkAuth() {
+    return true;
   }
 }
