@@ -61,4 +61,9 @@ export class AuthController {
 
     return loginResult;
   }
+
+  @Post("logout")
+  async logout(@Session() session: AuthSession) {
+    session.access_token = null;
+  }
 }
