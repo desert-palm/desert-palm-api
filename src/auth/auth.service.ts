@@ -11,8 +11,8 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateUser(name: string, password: string): Promise<Partial<User>> {
-    const user = await this.usersService.getUser({ where: { name } });
+  async validateUser(email: string, password: string): Promise<Partial<User>> {
+    const user = await this.usersService.getUser({ where: { email } });
     const passwordMatch = await compare(password, user.password);
 
     if (user && passwordMatch) {
@@ -22,8 +22,8 @@ export class AuthService {
     return null;
   }
 
-  async login({ id, name }: Partial<User>): Promise<{ access_token: string }> {
-    const payload = { username: name, sub: id };
+  async login({ id, email }: Partial<User>): Promise<{ access_token: string }> {
+    const payload = { email, sub: id };
     return {
       access_token: this.jwtService.sign(payload),
     };
