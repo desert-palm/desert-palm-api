@@ -1,6 +1,33 @@
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Other IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# ESLint and Prettier
+.eslintcache
+.husky
+
 # compiled output
 /dist
 /node_modules
+
+# Environment variables file
+.env
+.env.test
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 logs
@@ -11,42 +38,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# Environment variables file
-.env
-.env.test
-.env.development.local
-.env.test.local
-.env.production.local
-
 # OS
 .DS_Store
 
 # Tests
 /coverage
 /.nyc_output
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# Ignore hidden files by default
-.*
-!.gitignore
-!.gitkeep
-!.prettierrc
-!.eslintrc
-!.babelrc
-!.github/
-!.env.example
