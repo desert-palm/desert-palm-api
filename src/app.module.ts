@@ -4,9 +4,15 @@ import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
 import ormconfig from "./ormconfig";
 import { UsersModule } from "./users/users.module";
+import { ProductsModule } from "./products/products.module";
 
 @Module({
-  imports: [TypeOrmModule.forRoot(ormconfig), UsersModule, AuthModule],
+  imports: [
+    TypeOrmModule.forRoot(ormconfig),
+    AuthModule,
+    ProductsModule,
+    UsersModule,
+  ],
   controllers: [AppController],
 })
 export class AppModule {}
