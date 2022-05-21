@@ -7,10 +7,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFiles,
   UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UploadImages } from "../images/decorators/uploadImages.decorator";
 import { CreateProductDto } from "./dto/createProduct.dto";
 import { UpdateProductDto } from "./dto/updateProduct.dto";
 import { ProductsService } from "./products.service";
@@ -22,12 +24,12 @@ export class ProductsController {
 
   @Get(":productId")
   async getProduct(@Param("productId", ParseIntPipe) productId: number) {
-    return this.service.getProduct(productId);
+    return this.service.getProduct(productId, true);
   }
 
   @Get()
   async getProducts() {
-    return this.service.getProducts();
+    return this.service.getProducts(true);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -49,5 +51,14 @@ export class ProductsController {
   @Delete(":productId")
   async deleteProduct(@Param("productId", ParseIntPipe) productId: number) {
     this.service.deleteProduct(productId);
+  }
+
+  @Post(":productId/upload-images")
+  @UploadImages()
+  async uploadProductImages(
+    @Param("productId", ParseIntPipe) productId: number,
+    @UploadedFiles() images: Express.Multer.File[]
+  ) {
+    return this.service.saveProductImages(productId, images);
   }
 }
