@@ -44,3 +44,7 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+
+# Uploaded content
+/uploads/*
+!/uploads/README.md

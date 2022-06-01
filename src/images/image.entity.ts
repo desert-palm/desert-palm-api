@@ -2,28 +2,27 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Image } from "../images/image.entity";
+import { Product } from "../products/product.entity";
 
 @Entity()
-export class Product {
+export class Image {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  name: string;
+  filename: string;
 
   @Column()
-  description: string;
+  productId: number;
 
-  @Column()
-  price: number;
-
-  @OneToMany(() => Image, (image) => image.product)
-  images: Image[];
+  @ManyToOne(() => Product, (product) => product.images, {
+    onDelete: "CASCADE",
+  })
+  product: Product;
 
   @CreateDateColumn()
   createdAt: Date;
