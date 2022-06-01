@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOneOptions, Repository } from "typeorm";
-import { User } from "./user.entity";
+import { User } from "./models/user.model";
 
 @Injectable()
 export class UsersService {
@@ -14,10 +14,9 @@ export class UsersService {
     return this.usersRepository.findOne(options);
   }
 
-  async getUserById(id: number) {
-    const { password: _password, ...rest } = await this.usersRepository.findOne(
-      { where: { id } }
-    );
+  async getUserById(id: number): Promise<Omit<User, "password">> {
+    const { password: _password, ...rest } =
+      await this.usersRepository.findOneByOrFail({ id });
     return rest;
   }
 

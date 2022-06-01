@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Image } from "./image.entity";
 import { ImagesController } from "./images.controller";
+import { ImagesResolver } from "./images.resolver";
 import { ImagesService } from "./images.service";
+import { Image } from "./models/image.model";
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { ImagesService } from "./images.service";
       dest: "./uploads",
     }),
   ],
-  providers: [ImagesService],
+  providers: [ImagesService, ImagesResolver],
   controllers: [ImagesController],
   exports: [ImagesService],
 })
