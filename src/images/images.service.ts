@@ -11,8 +11,8 @@ export class ImagesService {
     private repository: Repository<Image>
   ) {}
 
-  async getImage(imageId: number) {
-    return this.repository.findOne(imageId);
+  async getImage(id: number) {
+    return this.repository.findOne({ where: { id } });
   }
 
   async getImages() {

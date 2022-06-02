@@ -16,8 +16,9 @@ export class ProductsService {
     private readonly imagesService: ImagesService
   ) {}
 
-  async getProduct(productId: number, withImages?: boolean) {
-    return this.repository.findOne(productId, {
+  async getProduct(id: number, withImages?: boolean) {
+    return this.repository.findOne({
+      where: { id },
       relations: withImages ? ["images"] : [],
     });
   }

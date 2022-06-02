@@ -14,6 +14,7 @@ import { UsersModule } from "./users/users.module";
     TypeOrmModule.forRoot(ormconfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      autoSchemaFile: true,
     }),
     AuthModule,
     ImagesModule,

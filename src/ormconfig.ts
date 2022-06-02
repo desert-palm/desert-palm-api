@@ -11,9 +11,6 @@ const ormconfig: TypeOrmModuleOptions = {
   database: process.env.DB_SCHEMA,
   entities: ["dist/**/*.entity{.ts,.js}"],
   migrations: ["migrations/*.js"],
-  cli: {
-    migrationsDir: "migrations",
-  },
   synchronize: process.env.NODE_ENV === "development",
 };
 
