@@ -18,11 +18,7 @@ export class ProductsResolver {
   }
 
   @Mutation(() => Product)
-  async createProduct(@Args("data") input: ProductInput) {
-    // TODO: Ensure that productsService.createProduct can take input of type ProductInput
-    // return this.productsService.createProduct(input);
-
-    // TODO: Remove when no longer needed for testing
-    console.log(input);
+  async createProduct(@Args("productData") productData: ProductInput) {
+    return this.productsService.createProduct(productData);
   }
 }

@@ -5,6 +5,7 @@ import { deleteImage } from "../images/image.utils";
 import { ImagesService } from "../images/images.service";
 import { CreateProductDto } from "./dto/createProduct.dto";
 import { UpdateProductDto } from "./dto/updateProduct.dto";
+import { ProductInput } from "./models/productInput.model";
 import { Product } from "./product.entity";
 
 @Injectable()
@@ -27,7 +28,7 @@ export class ProductsService {
     return this.repository.find({ relations: withImages ? ["images"] : [] });
   }
 
-  async createProduct(data: CreateProductDto) {
+  async createProduct(data: CreateProductDto | ProductInput) {
     return this.repository.save(data);
   }
 

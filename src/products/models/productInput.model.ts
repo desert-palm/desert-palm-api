@@ -9,5 +9,5 @@ export class ProductInput {
   description: string;
 
   @Field((_type) => Int)
-  price: string;
+  price: number;
 }
