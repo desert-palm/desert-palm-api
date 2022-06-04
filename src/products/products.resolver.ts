@@ -8,12 +8,12 @@ export class ProductsResolver {
   constructor(private service: ProductsService) {}
 
   @Query((_returns) => Product)
-  async getProduct(@Args("id", { type: () => Int }) id: number) {
+  async product(@Args("id", { type: () => Int }) id: number) {
     return this.service.getProduct(id, true);
   }
 
   @Query((_returns) => [Product])
-  async getProducts() {
+  async products() {
     return this.service.getProducts(true);
   }
 
