@@ -9,12 +9,12 @@ export class ProductsResolver {
 
   @Query((_returns) => Product)
   async getProduct(@Args("id", { type: () => Int }) id: number) {
-    return this.service.getProduct(id);
+    return this.service.getProduct(id, true);
   }
 
   @Query((_returns) => [Product])
   async getProducts() {
-    return this.service.getProducts();
+    return this.service.getProducts(true);
   }
 
   @Mutation(() => Product)
