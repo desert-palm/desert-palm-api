@@ -21,4 +21,9 @@ export class ProductsResolver {
   async createProduct(@Args("productData") productData: ProductInput) {
     return this.service.createProduct(productData);
   }
+
+  @Mutation((_returns) => Boolean)
+  async deleteProduct(@Args("id", { type: () => ID }) id: number) {
+    return this.service.deleteProduct(id);
+  }
 }

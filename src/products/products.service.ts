@@ -56,7 +56,7 @@ export class ProductsService {
     for (const { filename } of images) {
       await deleteImage(filename);
     }
-
-    return this.repository.delete(productId);
+    this.repository.delete(productId);
+    return true;
   }
 }
