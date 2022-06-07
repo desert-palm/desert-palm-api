@@ -23,10 +23,8 @@ export class ProductsResolver {
   }
 
   @Mutation(() => Product)
-  async updateProduct(
-    @Args("productData") { id, ...productData }: ProductInput
-  ) {
-    return this.service.updateProduct(id, productData);
+  async updateProduct(@Args("productData") { id, ...data }: ProductInput) {
+    return this.service.updateProduct(id, data);
   }
 
   @Mutation((_returns) => Boolean)
