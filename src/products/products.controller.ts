@@ -13,7 +13,6 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { UploadImages } from "../images/decorators/uploadImages.decorator";
-import { CreateProductDto } from "./dto/createProduct.dto";
 import { UpdateProductDto } from "./dto/updateProduct.dto";
 import { ProductsService } from "./products.service";
 
@@ -30,12 +29,6 @@ export class ProductsController {
   @Get()
   async getProducts() {
     return this.service.getProducts(true);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  async createProduct(@Body() body: CreateProductDto) {
-    return this.service.createProduct(body);
   }
 
   @UseGuards(JwtAuthGuard)

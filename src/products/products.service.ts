@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { deleteImage } from "../images/image.utils";
 import { ImagesService } from "../images/images.service";
-import { CreateProductDto } from "./dto/createProduct.dto";
 import { UpdateProductDto } from "./dto/updateProduct.dto";
 import { ProductInput } from "./models/productInput.model";
 import { Product } from "./product.entity";
@@ -28,13 +27,16 @@ export class ProductsService {
     return this.repository.find({ relations: withImages ? ["images"] : [] });
   }
 
-  async createProduct(data: CreateProductDto | ProductInput) {
+  async createProduct(data: ProductInput) {
     return this.repository.save(data);
   }
 
-  async updateProduct(productId: number, data: UpdateProductDto) {
+  async updateProduct(
+    productId: number,
+    data: UpdateProductDto | ProductInput
+  ) {
     await this.repository.update(productId, data);
-    return this.getProduct(productId, true);
+    return this.getProduct(productId);
   }
 
   async saveProductImages(productId: number, images: Express.Multer.File[]) {
