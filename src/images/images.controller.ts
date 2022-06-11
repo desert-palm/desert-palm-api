@@ -20,11 +20,6 @@ import { ImagesService } from "./images.service";
 export class ImagesController {
   constructor(private readonly service: ImagesService) {}
 
-  @Get()
-  async getImages() {
-    return this.service.getImages();
-  }
-
   @Get(":imageId/view")
   async getImageFile(
     @Param("imageId", ParseIntPipe) imageId: number,
