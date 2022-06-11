@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { deleteImage } from "../images/image.utils";
 import { ImagesService } from "../images/images.service";
-import { UpdateProductDto } from "./dto/updateProduct.dto";
 import { ProductInput } from "./models/productInput.model";
 import { Product } from "./product.entity";
 
@@ -31,10 +30,7 @@ export class ProductsService {
     return this.repository.save(data);
   }
 
-  async updateProduct(
-    productId: number,
-    data: UpdateProductDto | ProductInput
-  ) {
+  async updateProduct(productId: number, data: ProductInput) {
     await this.repository.update(productId, data);
     return this.getProduct(productId);
   }
