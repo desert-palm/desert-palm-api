@@ -1,50 +1,18 @@
 import {
-  Body,
   Controller,
-  Delete,
-  Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   UploadedFiles,
-  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { UploadImages } from "../images/decorators/uploadImages.decorator";
-import { UpdateProductDto } from "./dto/updateProduct.dto";
 import { ProductsService } from "./products.service";
 
 @ApiTags("products")
 @Controller("products")
 export class ProductsController {
   constructor(private readonly service: ProductsService) {}
-
-  @Get(":productId")
-  async getProduct(@Param("productId", ParseIntPipe) productId: number) {
-    return this.service.getProduct(productId, true);
-  }
-
-  @Get()
-  async getProducts() {
-    return this.service.getProducts(true);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch(":productId")
-  async updateProduct(
-    @Param("productId", ParseIntPipe) productId: number,
-    @Body() body: UpdateProductDto
-  ) {
-    return this.service.updateProduct(productId, body);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(":productId")
-  async deleteProduct(@Param("productId", ParseIntPipe) productId: number) {
-    this.service.deleteProduct(productId);
-  }
 
   @Post(":productId/upload-images")
   @UploadImages()
