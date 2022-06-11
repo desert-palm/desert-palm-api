@@ -5,8 +5,8 @@ import { Request } from "express";
 import { CreateUserDto } from "../users/dto/createUser.dto";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { JwtAuthGuard } from "./jwt-auth.guard";
-import { LocalAuthGuard } from "./local-auth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
 
 const SALT_ROUNDS = 10;
 

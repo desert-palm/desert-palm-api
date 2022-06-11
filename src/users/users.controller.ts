@@ -10,7 +10,7 @@ import {
   ParseIntPipe,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UpdateUserDto } from "./dto/updateUser.dto";
 import { UsersService } from "./users.service";
 
