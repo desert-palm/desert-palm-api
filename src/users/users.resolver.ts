@@ -3,6 +3,8 @@ import { User } from "./models/user.model";
 import { UserInput } from "./models/userInput.model";
 import { UsersService } from "./users.service";
 
+// TODO: Uncomment when ready to use
+// @UseGuards(GqlAuthGuard)
 @Resolver((_of: User) => User)
 export class UsersResolver {
   constructor(private service: UsersService) {}
