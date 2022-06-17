@@ -2,12 +2,12 @@ import { Args, Mutation, Resolver } from "@nestjs/graphql";
 import { UserInputError } from "apollo-server-express";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { LoginUserInput } from "./dto/login-user.input";
-import { LoginUserPayload } from "./dto/login-user.payload";
-import { RefreshTokenInput } from "./dto/refresh-token.input";
-import { RefreshTokenPayload } from "./dto/refresh-token.payload";
-import { RegisterUserInput } from "./dto/register-user.input";
-import { RegisterUserPayload } from "./dto/register-user.payload";
+import { LoginUserInput } from "./dto/loginUser.input";
+import { LoginUserPayload } from "./dto/loginUser.payload";
+import { RefreshTokenInput } from "./dto/refreshToken.input";
+import { RefreshTokenPayload } from "./dto/refreshToken.payload";
+import { SignUpInput } from "./dto/signUp.input";
+import { SignUpPayload } from "./dto/signUp.payload";
 
 @Resolver()
 export class AuthResolver {
@@ -38,36 +38,23 @@ export class AuthResolver {
 
   @Mutation(() => RefreshTokenPayload)
   async refreshToken(@Args("input") input: RefreshTokenInput) {
-    const { user, token } =
-      await this.authService.createAccessTokenFromRefreshToken(
-        input.refreshToken
-      );
-
-    return { user, token };
+    return this.authService.createAccessTokenFromRefreshToken(
+      input.refreshToken
+    );
   }
 
-  @Mutation(() => RegisterUserPayload)
-  async signUp(@Args("input") { username, password }: RegisterUserInput) {
+  @Mutation(() => SignUpPayload)
+  async signUp(@Args("input") { username, password }: SignUpInput) {
     const user = await this.usersService.createUser({
       name: username,
       password,
     });
-
-    if (!user) {
-      return new UserInputError(`User by username ${username} already exists.`);
-    }
-
     const accessToken = await this.authService.generateAccessToken(user.id);
     const refreshToken = await this.authService.generateRefreshToken(
       user.id,
       60 * 60 * 24 * 30
     );
 
-    const payload = new RegisterUserPayload();
-    payload.user = user;
-    payload.accessToken = accessToken;
-    payload.refreshToken = refreshToken;
-
-    return payload;
+    return { user, accessToken, refreshToken };
   }
 }

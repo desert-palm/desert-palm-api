@@ -2,7 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "../../users/user.entity";
 
 @ObjectType()
-export class RegisterUserPayload {
+export class SignUpPayload {
   @Field(() => User)
   user: User;
 
