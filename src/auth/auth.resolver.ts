@@ -16,6 +16,21 @@ export class AuthResolver {
     private usersService: UsersService
   ) {}
 
+  @Mutation(() => SignUpPayload)
+  async signUp(@Args("input") { username, password }: SignUpInput) {
+    const user = await this.usersService.createUser({
+      name: username,
+      password,
+    });
+    const accessToken = await this.authService.generateAccessToken(user.id);
+    const refreshToken = await this.authService.generateRefreshToken(
+      user.id,
+      60 * 60 * 24 * 30
+    );
+
+    return { user, accessToken, refreshToken };
+  }
+
   @Mutation(() => LoginUserPayload)
   async login(@Args("input") input: LoginUserInput) {
     const user = await this.authService.validateUser(
@@ -41,20 +56,5 @@ export class AuthResolver {
     return this.authService.createAccessTokenFromRefreshToken(
       input.refreshToken
     );
-  }
-
-  @Mutation(() => SignUpPayload)
-  async signUp(@Args("input") { username, password }: SignUpInput) {
-    const user = await this.usersService.createUser({
-      name: username,
-      password,
-    });
-    const accessToken = await this.authService.generateAccessToken(user.id);
-    const refreshToken = await this.authService.generateRefreshToken(
-      user.id,
-      60 * 60 * 24 * 30
-    );
-
-    return { user, accessToken, refreshToken };
   }
 }
