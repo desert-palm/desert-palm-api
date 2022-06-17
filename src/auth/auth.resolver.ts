@@ -2,12 +2,12 @@ import { Args, Mutation, Resolver } from "@nestjs/graphql";
 import { UserInputError } from "apollo-server-express";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { LoginUserInput } from "./dto/loginUser.input";
-import { LoginUserPayload } from "./dto/loginUser.payload";
-import { RefreshTokenInput } from "./dto/refreshToken.input";
-import { RefreshTokenPayload } from "./dto/refreshToken.payload";
-import { SignUpInput } from "./dto/signUp.input";
-import { SignUpPayload } from "./dto/signUp.payload";
+import { LoginUserInput } from "./models/loginUser.input";
+import { LoginUserPayload } from "./models/loginUser.payload";
+import { RefreshTokenInput } from "./models/refreshToken.input";
+import { RefreshTokenPayload } from "./models/refreshToken.payload";
+import { SignUpInput } from "./models/signUp.input";
+import { SignUpPayload } from "./models/signUp.payload";
 
 @Resolver()
 export class AuthResolver {
