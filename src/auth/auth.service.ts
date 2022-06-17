@@ -36,26 +36,26 @@ export class AuthService {
     };
   }
 
-  async generateAccessToken(user: Pick<User, "id">) {
-    const payload = { sub: String(user.id) };
+  async generateAccessToken(userId: number) {
+    const payload = { sub: String(userId) };
     return await this.jwtService.signAsync(payload);
   }
 
-  async createRefreshToken(user: Pick<User, "id">, ttl: number) {
+  async createRefreshToken(userId: number, ttl: number) {
     const expiration = new Date();
     expiration.setTime(expiration.getTime() + ttl);
 
     const token = this.refreshTokenRepository.create({
-      user,
+      user: { id: userId },
       expires: expiration,
     });
 
     return await this.refreshTokenRepository.save(token);
   }
 
-  async generateRefreshToken(user: Pick<User, "id">, expiresIn: number) {
-    const payload = { sub: String(user.id) };
-    const token = await this.createRefreshToken(user, expiresIn);
+  async generateRefreshToken(userId: number, expiresIn: number) {
+    const payload = { sub: String(userId) };
+    const token = await this.createRefreshToken(userId, expiresIn);
     return await this.jwtService.signAsync({
       ...payload,
       expiresIn,
@@ -102,7 +102,7 @@ export class AuthService {
   async createAccessTokenFromRefreshToken(refresh: string) {
     const { user } = await this.resolveRefreshToken(refresh);
 
-    const token = await this.generateAccessToken(user);
+    const token = await this.generateAccessToken(user.id);
 
     return { user, token };
   }

@@ -27,11 +27,9 @@ export class AuthResolver {
       return new UserInputError("Username or password incorrect.");
     }
 
-    const accessToken = await this.authService.generateAccessToken({
-      id: user.id,
-    });
+    const accessToken = await this.authService.generateAccessToken(user.id);
     const refreshToken = await this.authService.generateRefreshToken(
-      { id: user.id },
+      user.id,
       60 * 60 * 24 * 30
     );
 
@@ -49,7 +47,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => RegisterUserPayload)
-  async register(@Args("input") { username, password }: RegisterUserInput) {
+  async signUp(@Args("input") { username, password }: RegisterUserInput) {
     const user = await this.usersService.createUser({
       name: username,
       password,
@@ -59,9 +57,9 @@ export class AuthResolver {
       return new UserInputError(`User by username ${username} already exists.`);
     }
 
-    const accessToken = await this.authService.generateAccessToken(user);
+    const accessToken = await this.authService.generateAccessToken(user.id);
     const refreshToken = await this.authService.generateRefreshToken(
-      user,
+      user.id,
       60 * 60 * 24 * 30
     );
 

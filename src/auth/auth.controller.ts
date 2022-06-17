@@ -15,7 +15,7 @@ const SALT_ROUNDS = 10;
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private readonly usersService: UsersService
+    private usersService: UsersService
   ) {}
 
   @UseGuards(LocalAuthGuard)
