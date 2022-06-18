@@ -1,12 +1,10 @@
-import { UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { GqlAuthGuard } from "../auth/guards/gql-auth.guard";
 import { User } from "./models/user.model";
 import { UserInput } from "./models/userInput.model";
 import { UsersService } from "./users.service";
 
 // TODO: Uncomment when ready to use
-@UseGuards(GqlAuthGuard)
+// @UseGuards(GqlAuthGuard)
 @Resolver((_of: User) => User)
 export class UsersResolver {
   constructor(private service: UsersService) {}
