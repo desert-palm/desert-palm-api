@@ -8,7 +8,7 @@ import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 
-const SALT_ROUNDS = 10;
+export const SALT_ROUNDS = 10;
 
 @ApiTags("auth")
 @Controller("auth")
