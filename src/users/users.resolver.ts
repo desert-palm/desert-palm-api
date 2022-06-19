@@ -4,18 +4,25 @@ import { GqlAuthGuard } from "../auth/guards/gql-auth.guard";
 import { User } from "./models/user.model";
 import { UserInput } from "./models/user-input.model";
 import { UsersService } from "./users.service";
+import { GqlCurrentUser } from "../auth/decorators/gql-current-user.decorator";
 
 @UseGuards(GqlAuthGuard)
 @Resolver((_of: User) => User)
 export class UsersResolver {
   constructor(private service: UsersService) {}
 
-  @Query((_returns) => User)
+  @Query(() => User)
+  @UseGuards(GqlAuthGuard)
+  me(@GqlCurrentUser() { id }: User) {
+    return this.service.getUserById(id);
+  }
+
+  @Query(() => User)
   async user(@Args("id", { type: () => ID }) id: number) {
     return this.service.getUserById(id);
   }
 
-  @Query((_returns) => [User])
+  @Query(() => [User])
   async users() {
     return this.service.getUsers();
   }
@@ -25,7 +32,7 @@ export class UsersResolver {
     return this.service.updateUser(id, data);
   }
 
-  @Mutation((_returns) => Boolean)
+  @Mutation(() => Boolean)
   async deleteUser(@Args("id", { type: () => ID }) id: number) {
     return this.service.deleteUser(id);
   }

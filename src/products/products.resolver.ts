@@ -9,12 +9,12 @@ import { ProductsService } from "./products.service";
 export class ProductsResolver {
   constructor(private service: ProductsService) {}
 
-  @Query((_returns) => Product)
+  @Query(() => Product)
   async product(@Args("id", { type: () => ID }) id: number) {
     return this.service.getProduct(id, true);
   }
 
-  @Query((_returns) => [Product])
+  @Query(() => [Product])
   async products() {
     return this.service.getProducts(true);
   }
@@ -32,7 +32,7 @@ export class ProductsResolver {
   }
 
   @UseGuards(GqlAuthGuard)
-  @Mutation((_returns) => Boolean)
+  @Mutation(() => Boolean)
   async deleteProduct(@Args("id", { type: () => ID }) id: number) {
     return this.service.deleteProduct(id);
   }

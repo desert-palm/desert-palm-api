@@ -14,7 +14,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UpdateUserDto } from "./dto/updateUser.dto";
 import { UsersService } from "./users.service";
 
-interface RequestWithUser extends Request {
+export interface RequestWithUser extends Request {
   user: { email: string; userId: number };
 }
 
