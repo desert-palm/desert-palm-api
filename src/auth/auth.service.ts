@@ -1,12 +1,12 @@
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "../users/user.entity";
 import { UsersService } from "../users/users.service";
 import { compare } from "bcrypt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RefreshToken } from "./entities/refreshToken.entity";
 import { Repository } from "typeorm";
 import { TokenExpiredError } from "jsonwebtoken";
+import { User } from "../users/models/user.model";
 
 @Injectable()
 export class AuthService {
@@ -41,27 +41,28 @@ export class AuthService {
     return await this.jwtService.signAsync(payload);
   }
 
-  async createRefreshToken(userId: number, ttl: number) {
-    const expiration = new Date();
-    expiration.setTime(expiration.getTime() + ttl);
+  // TODO: Uncomment when ready to implement refresh tokens
+  // async createRefreshToken(userId: number, ttl: number) {
+  //   const expiration = new Date();
+  //   expiration.setTime(expiration.getTime() + ttl);
 
-    const token = this.refreshTokenRepository.create({
-      user: { id: userId },
-      expires: expiration,
-    });
+  //   const token = this.refreshTokenRepository.create({
+  //     user: { id: userId },
+  //     expires: expiration,
+  //   });
 
-    return await this.refreshTokenRepository.save(token);
-  }
+  //   return await this.refreshTokenRepository.save(token);
+  // }
 
-  async generateRefreshToken(userId: number, expiresIn: number) {
-    const payload = { sub: String(userId) };
-    const token = await this.createRefreshToken(userId, expiresIn);
-    return await this.jwtService.signAsync({
-      ...payload,
-      expiresIn,
-      jwtId: String(token.id),
-    });
-  }
+  // async generateRefreshToken(userId: number, expiresIn: number) {
+  //   const payload = { sub: String(userId) };
+  //   const token = await this.createRefreshToken(userId, expiresIn);
+  //   return await this.jwtService.signAsync({
+  //     ...payload,
+  //     expiresIn,
+  //     jwtId: String(token.id),
+  //   });
+  // }
 
   async resolveRefreshToken(encoded: string) {
     try {

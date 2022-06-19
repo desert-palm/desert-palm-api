@@ -3,6 +3,8 @@ import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { SALT_ROUNDS } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { LoginUserInput } from "./models/loginUser.input";
+import { LoginUserPayload } from "./models/loginUser.payload";
 import { SignUpInput } from "./models/signUp.input";
 import { SignUpPayload } from "./models/signUp.payload";
 
@@ -24,25 +26,11 @@ export class AuthResolver {
     return this.authService.login(user);
   }
 
-  // @Mutation(() => LoginUserPayload)
-  // async login(@Args("input") input: LoginUserInput) {
-  //   const user = await this.authService.validateUser(
-  //     input.username,
-  //     input.password
-  //   );
-
-  //   if (!user) {
-  //     return new UserInputError("Username or password incorrect.");
-  //   }
-
-  //   const accessToken = await this.authService.generateAccessToken(user.id);
-  //   const refreshToken = await this.authService.generateRefreshToken(
-  //     user.id,
-  //     60 * 60 * 24 * 30
-  //   );
-
-  //   return { user, accessToken, refreshToken };
-  // }
+  @Mutation(() => LoginUserPayload)
+  async login(@Args("input") input: LoginUserInput) {
+    // TODO: Remove when no longer needed for testing
+    console.log(input);
+  }
 
   // @Mutation(() => RefreshTokenPayload)
   // async refreshToken(@Args("input") input: RefreshTokenInput) {
