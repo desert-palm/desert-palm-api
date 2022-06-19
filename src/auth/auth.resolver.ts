@@ -1,8 +1,10 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { SALT_ROUNDS } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { GqlAuthGuard } from "./guards/gql-auth.guard";
 import { LoginInput } from "./models/login.input";
 import { LoginPayload } from "./models/login.payload";
 import { SignUpInput } from "./models/sign-up.input";
@@ -30,6 +32,12 @@ export class AuthResolver {
   async login(@Args("input") { email, password }: LoginInput) {
     const user = await this.authService.validateUser(email, password);
     return this.authService.login(user);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => Boolean)
+  async authCheck() {
+    return true;
   }
 
   // TODO: Uncomment when ready to implement refresh tokens
