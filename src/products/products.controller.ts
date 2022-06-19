@@ -6,7 +6,7 @@ import {
   UploadedFiles,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { UploadImages } from "../images/decorators/uploadImages.decorator";
+import { UploadImages } from "../images/decorators/upload-images.decorator";
 import { ProductsService } from "./products.service";
 
 @ApiTags("products")

@@ -3,10 +3,10 @@ import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { SALT_ROUNDS } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { LoginUserInput } from "./models/loginUser.input";
-import { LoginUserPayload } from "./models/loginUser.payload";
-import { SignUpInput } from "./models/signUp.input";
-import { SignUpPayload } from "./models/signUp.payload";
+import { LoginUserInput } from "./models/login-user.input";
+import { LoginUserPayload } from "./models/login-user.payload";
+import { SignUpInput } from "./models/sign-up.input";
+import { SignUpPayload } from "./models/sign-up.payload";
 
 @Resolver()
 export class AuthResolver {

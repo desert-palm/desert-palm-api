@@ -12,7 +12,7 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { UploadImages } from "./decorators/uploadImages.decorator";
+import { UploadImages } from "./decorators/upload-images.decorator";
 import { ImagesService } from "./images.service";
 
 @ApiTags("images")

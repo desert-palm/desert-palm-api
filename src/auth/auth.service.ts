@@ -3,7 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
 import { compare } from "bcrypt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RefreshToken } from "./entities/refreshToken.entity";
+import { RefreshToken } from "./entities/refresh-token.entity";
 import { Repository } from "typeorm";
 import { TokenExpiredError } from "jsonwebtoken";
 import { User } from "../users/models/user.model";

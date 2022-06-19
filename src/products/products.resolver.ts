@@ -2,7 +2,7 @@ import { UseGuards } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { GqlAuthGuard } from "../auth/guards/gql-auth.guard";
 import { Product } from "./models/product.model";
-import { ProductInput } from "./models/productInput.model";
+import { ProductInput } from "./models/product-input.model";
 import { ProductsService } from "./products.service";
 
 @Resolver((_of: Product) => Product)
