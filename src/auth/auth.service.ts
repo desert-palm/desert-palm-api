@@ -6,7 +6,7 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { Repository } from "typeorm";
 import { User } from "../users/models/user.model";
 import { UsersService } from "../users/users.service";
-import { LoginPayload } from "./models/login.payload";
+import { AuthPayload } from "./models/auth.payload";
 import { RefreshToken } from "./models/refresh-token.model";
 import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
@@ -31,16 +31,15 @@ export class AuthService {
     return null;
   }
 
-  async login({ id, email }: Partial<User>): Promise<LoginPayload> {
+  async login({ id, email }: Partial<User>): Promise<AuthPayload> {
+    const expires_in = 60 * 60 * 24 * 30;
     const access_token = await this.generateAccessToken(id, email);
-    const refresh_token = await this.generateRefreshToken(
-      id,
-      60 * 60 * 24 * 30
-    );
+    const refresh_token = await this.generateRefreshToken(id, expires_in);
 
     return {
       access_token,
       refresh_token,
+      expires_in,
     };
   }
 
