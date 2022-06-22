@@ -3,36 +3,34 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { RefreshToken } from "../../auth/refresh-tokens/models/refresh-token.model";
+import { User } from "../../../users/models/user.model";
 
 @Entity()
 @ObjectType()
-export class User {
+export class RefreshToken {
   @PrimaryGeneratedColumn()
   @Field((_type) => Int)
   id: number;
 
-  @Column({ unique: true })
+  @Column({ default: false })
   @Field()
-  name: string;
+  revoked: boolean;
 
-  @Column({ unique: true })
-  @Field()
-  email: string;
+  @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: "CASCADE" })
+  @Field((_type) => User)
+  user: User;
 
   @Column()
   @Field()
-  password: string;
+  userId: number;
 
-  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
-    cascade: true,
-  })
-  @Field((_type) => [RefreshToken])
-  refreshTokens: RefreshToken[];
+  @Column()
+  @Field()
+  expiresAt: Date;
 
   @CreateDateColumn()
   @Field()

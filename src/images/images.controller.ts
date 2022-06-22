@@ -31,12 +31,13 @@ export class ImagesController {
 
   @Post()
   @UploadImages()
+  @UseGuards(JwtAuthGuard)
   async uploadImages(@UploadedFiles() images: Express.Multer.File[]) {
     return this.service.saveImages(images);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(":imageId")
+  @UseGuards(JwtAuthGuard)
   async deleteImage(@Param("imageId", ParseIntPipe) imageId: number) {
     this.service.deleteImage(imageId);
   }

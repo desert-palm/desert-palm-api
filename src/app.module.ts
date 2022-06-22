@@ -15,6 +15,8 @@ import { UsersModule } from "./users/users.module";
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      cors: { origin: true, credentials: true },
+      csrfPrevention: process.env.NODE_ENV !== "development",
     }),
     AuthModule,
     ImagesModule,
