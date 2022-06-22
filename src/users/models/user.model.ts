@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { RefreshToken } from "../../auth/models/refresh-token.model";
 
 @Entity()
 @ObjectType()
@@ -26,12 +28,11 @@ export class User {
   @Field()
   password: string;
 
-  // TODO: Uncomment when ready to implement refresh tokens
-  // @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
-  //   cascade: true,
-  // })
-  // @Field()
-  // refreshTokens: RefreshToken[];
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
+    cascade: true,
+  })
+  @Field((_type) => [RefreshToken])
+  refreshTokens: RefreshToken[];
 
   @CreateDateColumn()
   @Field()

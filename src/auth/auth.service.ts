@@ -1,12 +1,14 @@
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UsersService } from "../users/users.service";
-import { compare } from "bcrypt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RefreshToken } from "./entities/refresh-token.entity";
-import { Repository } from "typeorm";
+import { compare } from "bcrypt";
 import { TokenExpiredError } from "jsonwebtoken";
+import { Repository } from "typeorm";
 import { User } from "../users/models/user.model";
+import { UsersService } from "../users/users.service";
+import { LoginPayload } from "./models/login.payload";
+import { RefreshToken } from "./models/refresh-token.model";
+import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
 @Injectable()
 export class AuthService {
@@ -29,40 +31,45 @@ export class AuthService {
     return null;
   }
 
-  async login({ id, email }: Partial<User>) {
-    const payload = { email, sub: id };
+  async login({ id, email }: Partial<User>): Promise<LoginPayload> {
+    const access_token = await this.generateAccessToken(id, email);
+    const refresh_token = await this.generateRefreshToken(
+      id,
+      60 * 60 * 24 * 30
+    );
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
+      refresh_token,
     };
   }
 
-  async generateAccessToken(userId: number) {
-    const payload = { sub: String(userId) };
-    return await this.jwtService.signAsync(payload);
+  async generateAccessToken(userId: number, email: string) {
+    const payload = { email, sub: userId };
+    return this.jwtService.signAsync(payload);
   }
 
-  // TODO: Uncomment when ready to implement refresh tokens
-  // async createRefreshToken(userId: number, ttl: number) {
-  //   const expiration = new Date();
-  //   expiration.setTime(expiration.getTime() + ttl);
+  async createRefreshToken(userId: number, ttl: number) {
+    const expiration = new Date();
+    expiration.setTime(expiration.getTime() + ttl);
 
-  //   const token = this.refreshTokenRepository.create({
-  //     user: { id: userId },
-  //     expires: expiration,
-  //   });
+    const token = this.refreshTokenRepository.create({
+      user: { id: userId },
+      expires: expiration,
+    });
 
-  //   return await this.refreshTokenRepository.save(token);
-  // }
+    return this.refreshTokenRepository.save(token);
+  }
 
-  // async generateRefreshToken(userId: number, expiresIn: number) {
-  //   const payload = { sub: String(userId) };
-  //   const token = await this.createRefreshToken(userId, expiresIn);
-  //   return await this.jwtService.signAsync({
-  //     ...payload,
-  //     expiresIn,
-  //     jwtId: String(token.id),
-  //   });
-  // }
+  async generateRefreshToken(userId: number, expiresIn: number) {
+    const payload = { sub: String(userId) };
+    const token = await this.createRefreshToken(userId, expiresIn);
+    return this.jwtService.signAsync({
+      ...payload,
+      expiresIn,
+      jwtId: String(token.id),
+    });
+  }
 
   async resolveRefreshToken(encoded: string) {
     try {
@@ -100,11 +107,11 @@ export class AuthService {
     }
   }
 
-  async createAccessTokenFromRefreshToken(refresh: string) {
+  async createAccessTokenFromRefreshToken(
+    refresh: string
+  ): Promise<RefreshTokenPayload> {
     const { user } = await this.resolveRefreshToken(refresh);
-
-    const token = await this.generateAccessToken(user.id);
-
-    return { user, token };
+    const access_token = await this.generateAccessToken(user.id, user.email);
+    return { access_token };
   }
 }
