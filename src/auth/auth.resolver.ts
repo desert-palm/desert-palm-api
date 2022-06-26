@@ -4,9 +4,9 @@ import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { GqlAuthGuard } from "./guards/gql-auth.guard";
-import { LoginInput } from "./models/login.input";
+import { JwtRefreshAuthGuard } from "./guards/jwt-refresh-auth.guard";
 import { AuthPayload } from "./models/auth.payload";
-import { RefreshTokenInput } from "./models/refresh-token.input";
+import { LoginInput } from "./models/login.input";
 import { RefreshTokenPayload } from "./models/refresh-token.payload";
 import { SignUpInput } from "./models/sign-up.input";
 
@@ -35,11 +35,10 @@ export class AuthResolver {
     return this.authService.login(user);
   }
 
+  @UseGuards(JwtRefreshAuthGuard)
   @Mutation(() => RefreshTokenPayload)
-  async refreshToken(@Args("input") input: RefreshTokenInput) {
-    return this.authService.createAccessTokenFromRefreshToken(
-      input.refresh_token
-    );
+  async refreshToken() {
+    return this.authService.refreshToken();
   }
 
   @UseGuards(GqlAuthGuard)

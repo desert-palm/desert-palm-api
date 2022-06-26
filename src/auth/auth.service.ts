@@ -47,7 +47,12 @@ export class AuthService {
     const payload = { email, sub: userId };
 
     // TODO: Increase expires_in duration after finished with testing
-    return this.jwtService.signAsync(payload, { expiresIn: 15 });
+    return this.jwtService.signAsync(payload, { expiresIn: 10 });
+  }
+
+  async refreshToken(): Promise<RefreshTokenPayload> {
+    const access_token = await this.jwtService.signAsync({}, { expiresIn: 10 });
+    return { access_token };
   }
 
   async createRefreshToken(userId: number, ttl: number) {

@@ -6,6 +6,7 @@ import { UsersModule } from "../users/users.module";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { RefreshToken } from "./models/refresh-token.model";
+import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "./strategies/local.strategy";
 
@@ -18,6 +19,12 @@ import { LocalStrategy } from "./strategies/local.strategy";
     }),
     TypeOrmModule.forFeature([RefreshToken]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, AuthResolver],
+  providers: [
+    AuthResolver,
+    AuthService,
+    JwtRefreshStrategy,
+    JwtStrategy,
+    LocalStrategy,
+  ],
 })
 export class AuthModule {}
