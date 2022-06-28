@@ -9,7 +9,7 @@ import {
 } from "@nestjs/graphql";
 import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
-import { AuthService } from "./auth.service";
+import { AuthService, RefreshTokenContents } from "./auth.service";
 import { GqlAuthGuard } from "./guards/gql-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-refresh-auth.guard";
 import { AuthPayload } from "./models/auth.payload";
@@ -19,7 +19,7 @@ import { SignUpInput } from "./models/sign-up.input";
 
 interface RefreshTokenContext extends GqlExecutionContext {
   req: {
-    user: { email: string; userId: string; jwtId: string };
+    user: RefreshTokenContents;
   };
 }
 
@@ -51,7 +51,7 @@ export class AuthResolver {
   @UseGuards(JwtRefreshAuthGuard)
   @Mutation(() => RefreshTokenPayload)
   async refreshToken(@Context() context: RefreshTokenContext) {
-    return this.authService.refreshToken(context.req.user.userId);
+    return this.authService.refreshToken(context.req.user);
   }
 
   @UseGuards(GqlAuthGuard)

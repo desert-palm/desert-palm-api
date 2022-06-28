@@ -10,6 +10,12 @@ import { AuthPayload } from "./models/auth.payload";
 import { RefreshToken } from "./models/refresh-token.model";
 import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
+export interface RefreshTokenContents {
+  email: string;
+  userId: string;
+  jwtId: string;
+}
+
 export const ACCESS_TOKEN_EXPIRES_IN = 10;
 
 @Injectable()
@@ -49,6 +55,45 @@ export class AuthService {
     };
   }
 
+  async refreshToken({
+    userId,
+    jwtId,
+  }: RefreshTokenContents): Promise<RefreshTokenPayload> {
+    const { user } = await this.validateRefreshToken(userId, jwtId);
+    const access_token = await this.generateAccessToken(user.id, user.email);
+    return { access_token };
+  }
+
+  async validateRefreshToken(userId: string, jwtId: string) {
+    try {
+      const token = await this.refreshTokenRepository.findOne({
+        where: { id: parseInt(jwtId) },
+      });
+
+      if (!token) {
+        throw new UnprocessableEntityException("Refresh token not found");
+      }
+
+      if (token.revoked) {
+        throw new UnprocessableEntityException("Refresh token revoked");
+      }
+
+      const user = await this.usersService.getUserById(parseInt(userId));
+
+      if (!user) {
+        throw new UnprocessableEntityException("Refresh token malformed");
+      }
+
+      return { user, token };
+    } catch (e) {
+      if (e instanceof TokenExpiredError) {
+        throw new UnprocessableEntityException("Refresh token expired");
+      } else {
+        throw new UnprocessableEntityException("Refresh token malformed");
+      }
+    }
+  }
+
   async generateAccessToken(userId: number, email: string) {
     const payload = { email, sub: userId };
 
@@ -56,12 +101,6 @@ export class AuthService {
     return this.jwtService.signAsync(payload, {
       expiresIn: ACCESS_TOKEN_EXPIRES_IN,
     });
-  }
-
-  async refreshToken(userId: string): Promise<RefreshTokenPayload> {
-    const user = await this.usersService.getUserById(parseInt(userId));
-    const access_token = await this.generateAccessToken(user.id, user.email);
-    return { access_token };
   }
 
   async createRefreshToken(userId: number, ttl: number) {
@@ -84,49 +123,5 @@ export class AuthService {
       expiresIn,
       jwtId: String(token.id),
     });
-  }
-
-  async resolveRefreshToken(encoded: string) {
-    try {
-      const payload = await this.jwtService.verify(encoded);
-
-      if (!payload.sub || !payload.jwtId) {
-        throw new UnprocessableEntityException("Refresh token malformed");
-      }
-
-      const token = await this.refreshTokenRepository.findOne({
-        where: { id: payload.jwtId },
-      });
-
-      if (!token) {
-        throw new UnprocessableEntityException("Refresh token not found");
-      }
-
-      if (token.revoked) {
-        throw new UnprocessableEntityException("Refresh token revoked");
-      }
-
-      const user = await this.usersService.getUserById(payload.subject);
-
-      if (!user) {
-        throw new UnprocessableEntityException("Refresh token malformed");
-      }
-
-      return { user, token };
-    } catch (e) {
-      if (e instanceof TokenExpiredError) {
-        throw new UnprocessableEntityException("Refresh token expired");
-      } else {
-        throw new UnprocessableEntityException("Refresh token malformed");
-      }
-    }
-  }
-
-  async createAccessTokenFromRefreshToken(
-    refreshToken: string
-  ): Promise<RefreshTokenPayload> {
-    const { user } = await this.resolveRefreshToken(refreshToken);
-    const access_token = await this.generateAccessToken(user.id, user.email);
-    return { access_token };
   }
 }
