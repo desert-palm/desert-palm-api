@@ -11,9 +11,8 @@ import { RefreshToken } from "./models/refresh-token.model";
 import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
 export interface RefreshTokenContents {
-  email: string;
   userId: string;
-  jwtId: string;
+  refreshTokenId: string;
 }
 
 export const ACCESS_TOKEN_EXPIRES_IN = 10;
@@ -39,14 +38,10 @@ export class AuthService {
     return null;
   }
 
-  async login({ id, email }: Partial<User>): Promise<AuthPayload> {
+  async login({ id }: Partial<User>): Promise<AuthPayload> {
     const expires_in = 60 * 60 * 24 * 30;
-    const access_token = await this.generateAccessToken(id, email);
-    const refresh_token = await this.generateRefreshToken(
-      id,
-      email,
-      expires_in
-    );
+    const access_token = await this.generateAccessToken(id);
+    const refresh_token = await this.generateRefreshToken(id, expires_in);
 
     return {
       access_token,
@@ -57,17 +52,17 @@ export class AuthService {
 
   async refreshToken({
     userId,
-    jwtId,
+    refreshTokenId,
   }: RefreshTokenContents): Promise<RefreshTokenPayload> {
-    const { user } = await this.validateRefreshToken(userId, jwtId);
-    const access_token = await this.generateAccessToken(user.id, user.email);
+    const { user } = await this.validateRefreshToken(userId, refreshTokenId);
+    const access_token = await this.generateAccessToken(user.id);
     return { access_token };
   }
 
-  async validateRefreshToken(userId: string, jwtId: string) {
+  async validateRefreshToken(userId: string, refreshTokenId: string) {
     try {
       const token = await this.refreshTokenRepository.findOne({
-        where: { id: parseInt(jwtId) },
+        where: { id: parseInt(refreshTokenId) },
       });
 
       if (!token) {
@@ -94,8 +89,8 @@ export class AuthService {
     }
   }
 
-  async generateAccessToken(userId: number, email: string) {
-    const payload = { email, sub: userId };
+  async generateAccessToken(userId: number) {
+    const payload = { sub: userId };
 
     // TODO: Increase expires_in duration after finished with testing
     return this.jwtService.signAsync(payload, {
@@ -115,13 +110,12 @@ export class AuthService {
     return this.refreshTokenRepository.save(token);
   }
 
-  async generateRefreshToken(userId: number, email: string, expiresIn: number) {
-    const payload = { email, sub: String(userId) };
+  async generateRefreshToken(userId: number, expiresIn: number) {
     const token = await this.createRefreshToken(userId, expiresIn);
+    const payload = { sub: String(userId), jti: String(token.id) };
     return this.jwtService.signAsync({
       ...payload,
       expiresIn,
-      jwtId: String(token.id),
     });
   }
 }
