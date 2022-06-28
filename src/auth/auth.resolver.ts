@@ -19,7 +19,7 @@ import { SignUpInput } from "./models/sign-up.input";
 
 interface RefreshTokenContext extends GqlExecutionContext {
   req: {
-    user: { email: string; userId: string };
+    user: { email: string; userId: string; jwtId: string };
   };
 }
 
@@ -51,10 +51,7 @@ export class AuthResolver {
   @UseGuards(JwtRefreshAuthGuard)
   @Mutation(() => RefreshTokenPayload)
   async refreshToken(@Context() context: RefreshTokenContext) {
-    // TODO: Remove when no longer needed for testing
-    console.log("context:", context.req.user);
-
-    return this.authService.refreshToken();
+    return this.authService.refreshToken(context.req.user.userId);
   }
 
   @UseGuards(GqlAuthGuard)

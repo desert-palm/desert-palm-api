@@ -58,11 +58,9 @@ export class AuthService {
     });
   }
 
-  async refreshToken(): Promise<RefreshTokenPayload> {
-    const access_token = await this.jwtService.signAsync(
-      {},
-      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
-    );
+  async refreshToken(userId: string): Promise<RefreshTokenPayload> {
+    const user = await this.usersService.getUserById(parseInt(userId));
+    const access_token = await this.generateAccessToken(user.id, user.email);
     return { access_token };
   }
 
