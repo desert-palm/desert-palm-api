@@ -10,6 +10,8 @@ import { AuthPayload } from "./models/auth.payload";
 import { RefreshToken } from "./models/refresh-token.model";
 import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
+export const ACCESS_TOKEN_EXPIRES_IN = 10;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,11 +49,16 @@ export class AuthService {
     const payload = { email, sub: userId };
 
     // TODO: Increase expires_in duration after finished with testing
-    return this.jwtService.signAsync(payload, { expiresIn: 10 });
+    return this.jwtService.signAsync(payload, {
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    });
   }
 
   async refreshToken(): Promise<RefreshTokenPayload> {
-    const access_token = await this.jwtService.signAsync({}, { expiresIn: 10 });
+    const access_token = await this.jwtService.signAsync(
+      {},
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
+    );
     return { access_token };
   }
 
