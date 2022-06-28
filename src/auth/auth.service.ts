@@ -36,7 +36,11 @@ export class AuthService {
   async login({ id, email }: Partial<User>): Promise<AuthPayload> {
     const expires_in = 60 * 60 * 24 * 30;
     const access_token = await this.generateAccessToken(id, email);
-    const refresh_token = await this.generateRefreshToken(id, expires_in);
+    const refresh_token = await this.generateRefreshToken(
+      id,
+      email,
+      expires_in
+    );
 
     return {
       access_token,
@@ -74,8 +78,8 @@ export class AuthService {
     return this.refreshTokenRepository.save(token);
   }
 
-  async generateRefreshToken(userId: number, expiresIn: number) {
-    const payload = { sub: String(userId) };
+  async generateRefreshToken(userId: number, email: string, expiresIn: number) {
+    const payload = { email, sub: String(userId) };
     const token = await this.createRefreshToken(userId, expiresIn);
     return this.jwtService.signAsync({
       ...payload,
