@@ -1,18 +1,19 @@
+// TODO: Add refresh token module within auth
+
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { compare } from "bcrypt";
 import { TokenExpiredError } from "jsonwebtoken";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { User } from "../users/models/user.model";
 import { UsersService } from "../users/users.service";
 import { AuthPayload } from "./models/auth.payload";
 import { RefreshToken } from "./models/refresh-token.model";
-import { RefreshTokenPayload } from "./models/refresh-token.payload";
 
-export interface RefreshTokenContents {
-  userId: string;
-  refreshTokenId: string;
+export interface RefreshTokenPayload {
+  userId: number;
+  refreshTokenId: number;
 }
 
 export const ACCESS_TOKEN_EXPIRES_IN = 10;
@@ -38,31 +39,41 @@ export class AuthService {
     return null;
   }
 
-  async login({ id }: Partial<User>): Promise<AuthPayload> {
+  async login(userId: number): Promise<AuthPayload> {
     const expires_in = 60 * 60 * 24 * 30;
-    const access_token = await this.generateAccessToken(id);
-    const refresh_token = await this.generateRefreshToken(id, expires_in);
-
-    return {
-      access_token,
-      refresh_token,
-      expires_in,
-    };
+    const access_token = await this.generateAccessToken(userId);
+    const { refresh_token } = await this.generateRefreshToken(
+      userId,
+      expires_in
+    );
+    return { access_token, refresh_token, expires_in };
   }
 
   async refreshToken({
     userId,
     refreshTokenId,
-  }: RefreshTokenContents): Promise<RefreshTokenPayload> {
-    const { user } = await this.validateRefreshToken(userId, refreshTokenId);
-    const access_token = await this.generateAccessToken(user.id);
-    return { access_token };
+  }: RefreshTokenPayload): Promise<AuthPayload> {
+    await this.validateRefreshToken(userId, refreshTokenId);
+
+    const expires_in = 60 * 60 * 24 * 30;
+    const access_token = await this.generateAccessToken(userId);
+
+    // Implements refresh token rotation - a new refresh token is issed on every refresh
+    const { refresh_token, id } = await this.generateRefreshToken(
+      userId,
+      expires_in
+    );
+
+    // Revokes all refresh tokens for the user other than the one just created
+    await this.revokeAllOtherRefreshTokensForUser(id, userId);
+
+    return { access_token, refresh_token, expires_in };
   }
 
-  async validateRefreshToken(userId: string, refreshTokenId: string) {
+  async validateRefreshToken(userId: number, refreshTokenId: number) {
     try {
       const token = await this.refreshTokenRepository.findOne({
-        where: { id: parseInt(refreshTokenId) },
+        where: { id: refreshTokenId },
       });
 
       if (!token) {
@@ -70,21 +81,27 @@ export class AuthService {
       }
 
       if (token.revoked) {
+        /**
+         * Helps to prevent Replay Attacks
+         * https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation
+         */
+        await this.revokeAllRefreshTokensForUser(userId);
+
         throw new UnprocessableEntityException("Refresh token revoked");
       }
 
-      const user = await this.usersService.getUserById(parseInt(userId));
+      const user = await this.usersService.getUserById(userId);
 
       if (!user) {
         throw new UnprocessableEntityException("Refresh token malformed");
       }
 
-      return { user, token };
+      return true;
     } catch (e) {
       if (e instanceof TokenExpiredError) {
         throw new UnprocessableEntityException("Refresh token expired");
       } else {
-        throw new UnprocessableEntityException("Refresh token malformed");
+        throw new UnprocessableEntityException(e.message);
       }
     }
   }
@@ -99,23 +116,47 @@ export class AuthService {
   }
 
   async createRefreshToken(userId: number, ttl: number) {
-    const expiration = new Date();
-    expiration.setTime(expiration.getTime() + ttl);
-
-    const token = this.refreshTokenRepository.create({
-      user: { id: userId },
-      expires: expiration,
-    });
+    const expiresAt = new Date();
+    expiresAt.setTime(expiresAt.getTime() + ttl);
+    const token = this.refreshTokenRepository.create({ expiresAt, userId });
 
     return this.refreshTokenRepository.save(token);
   }
 
   async generateRefreshToken(userId: number, expiresIn: number) {
-    const token = await this.createRefreshToken(userId, expiresIn);
-    const payload = { sub: String(userId), jti: String(token.id) };
-    return this.jwtService.signAsync({
+    const { id } = await this.createRefreshToken(userId, expiresIn);
+    const payload = { jti: String(id), sub: String(userId) };
+    const refresh_token = await this.jwtService.signAsync({
       ...payload,
       expiresIn,
     });
+
+    return { refresh_token, id };
+  }
+
+  async revokeAllRefreshTokensForUser(userId: number) {
+    await this.refreshTokenRepository.update(
+      { userId },
+      {
+        revoked: true,
+      }
+    );
+  }
+
+  async revokeAllOtherRefreshTokensForUser(
+    refreshTokenId: number,
+    userId: number
+  ) {
+    await this.refreshTokenRepository.update(
+      { id: Not(refreshTokenId), userId },
+      {
+        revoked: true,
+      }
+    );
+  }
+
+  // TODO: Remove when no longer needed for testing
+  async getRefreshTokens() {
+    return await this.refreshTokenRepository.find({ relations: ["user"] });
   }
 }

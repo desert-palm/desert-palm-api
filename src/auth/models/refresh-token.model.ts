@@ -16,17 +16,21 @@ export class RefreshToken {
   @Field((_type) => Int)
   id: number;
 
-  @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: "CASCADE" })
-  @Field((_type) => [User])
-  user: User;
-
   @Column({ default: false })
   @Field()
   revoked: boolean;
 
+  @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: "CASCADE" })
+  @Field((_type) => User)
+  user: User;
+
   @Column()
   @Field()
-  expires: Date;
+  userId: number;
+
+  @Column()
+  @Field()
+  expiresAt: Date;
 
   @CreateDateColumn()
   @Field()
