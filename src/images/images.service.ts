@@ -37,7 +37,7 @@ export class ImagesService {
   async deleteImage(imageId: number) {
     const { filename } = await this.getImage(imageId);
     await deleteImage(filename);
-
-    return this.repository.delete(imageId);
+    this.repository.delete(imageId);
+    return true;
   }
 }
