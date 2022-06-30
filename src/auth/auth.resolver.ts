@@ -1,27 +1,12 @@
 import { UseGuards } from "@nestjs/common";
-import {
-  Args,
-  Context,
-  GqlExecutionContext,
-  Mutation,
-  Query,
-  Resolver,
-} from "@nestjs/graphql";
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { hash } from "bcrypt";
 import { UsersService } from "../users/users.service";
-import { AuthService, RefreshTokenPayload } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { GqlAuthGuard } from "./guards/gql-auth.guard";
-import { JwtRefreshAuthGuard } from "./guards/jwt-refresh-auth.guard";
 import { AuthPayload } from "./models/auth.payload";
 import { LoginInput } from "./models/login.input";
-import { RefreshToken } from "./models/refresh-token.model";
 import { SignUpInput } from "./models/sign-up.input";
-
-interface RefreshTokenContext extends GqlExecutionContext {
-  req: {
-    user: RefreshTokenPayload;
-  };
-}
 
 const SALT_ROUNDS = 10;
 
@@ -31,18 +16,6 @@ export class AuthResolver {
     private authService: AuthService,
     private usersService: UsersService
   ) {}
-
-  @UseGuards(GqlAuthGuard)
-  @Query(() => Boolean)
-  async authCheck() {
-    return true;
-  }
-
-  // TODO: Remove when no longer needed for testing
-  @Query(() => [RefreshToken])
-  async refreshTokens() {
-    return this.authService.getRefreshTokens();
-  }
 
   @Mutation(() => AuthPayload)
   async login(@Args("input") { email, password }: LoginInput) {
@@ -60,9 +33,9 @@ export class AuthResolver {
     return this.authService.login(user.id);
   }
 
-  @UseGuards(JwtRefreshAuthGuard)
-  @Mutation(() => AuthPayload)
-  async refreshToken(@Context() context: RefreshTokenContext) {
-    return this.authService.refreshToken(context.req.user);
+  @UseGuards(GqlAuthGuard)
+  @Query(() => Boolean)
+  async authCheck() {
+    return true;
   }
 }
