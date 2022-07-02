@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { RefreshToken } from "../../auth/models/refresh-token.model";
+import { RefreshToken } from "../../auth/refresh-tokens/models/refresh-token.model";
 
 @Entity()
 @ObjectType()
