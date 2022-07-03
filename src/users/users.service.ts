@@ -14,7 +14,7 @@ export class UsersService {
     return this.usersRepository.findOne(options);
   }
 
-  async getUserById(id: number) {
+  async getUserById(id: number): Promise<Partial<User>> {
     const { password: _password, ...rest } = await this.usersRepository.findOne(
       { where: { id } }
     );

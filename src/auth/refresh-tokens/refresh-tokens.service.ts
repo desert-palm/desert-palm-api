@@ -9,8 +9,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { TokenExpiredError } from "jsonwebtoken";
 import { Not, Repository } from "typeorm";
 import { UsersService } from "../../users/users.service";
-import { AuthService } from "../auth.service";
-import { AuthPayload } from "../models/auth.payload";
+import { AuthCookiePayload, AuthService } from "../auth.service";
 import { RefreshToken } from "./models/refresh-token.model";
 
 export interface RefreshTokenPayload {
@@ -34,7 +33,7 @@ export class RefreshTokensService {
   async refreshToken({
     userId,
     refreshTokenId,
-  }: RefreshTokenPayload): Promise<AuthPayload> {
+  }: RefreshTokenPayload): Promise<AuthCookiePayload> {
     await this.validateRefreshToken(userId, refreshTokenId);
 
     const expires_in = 60 * 60 * 24 * 30;

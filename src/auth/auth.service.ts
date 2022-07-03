@@ -1,18 +1,21 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { compare } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { User } from "../users/models/user.model";
 import { UsersService } from "../users/users.service";
-import { AuthPayload } from "./models/auth.payload";
+import { LoginInput } from "./models/login.input";
+import { SignUpInput } from "./models/sign-up.input";
 import { RefreshTokensService } from "./refresh-tokens/refresh-tokens.service";
 
-export interface RefreshTokenPayload {
-  userId: number;
-  refreshTokenId: number;
-}
-
-// TODO: Increase expires_in duration after finished with testing
+// TODO: Increase or decrease expires_in duration after finished with testing
 const ACCESS_TOKEN_EXPIRES_IN = 10;
+const SALT_ROUNDS = 10;
+
+export interface AuthCookiePayload {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+}
 
 @Injectable()
 export class AuthService {
@@ -24,7 +27,26 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async login(userId: number): Promise<AuthPayload> {
+  async login({ email, password }: LoginInput) {
+    const user = await this.validateUser(email, password);
+    return this.generateTokens(user.id);
+  }
+
+  async signUp({ password, ...rest }: SignUpInput) {
+    const passwordHash = await hash(password, SALT_ROUNDS);
+    const user = await this.usersService.createUser({
+      password: passwordHash,
+      ...rest,
+    });
+    return this.generateTokens(user.id);
+  }
+
+  async logOut(userId: number) {
+    await this.refreshTokensService.revokeAllRefreshTokensForUser(userId);
+    return true;
+  }
+
+  async generateTokens(userId: number): Promise<AuthCookiePayload> {
     const expires_in = 60 * 60 * 24 * 30;
     const access_token = await this.generateAccessToken(userId);
     const { refresh_token } =

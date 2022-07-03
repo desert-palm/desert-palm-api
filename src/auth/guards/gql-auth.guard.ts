@@ -1,3 +1,5 @@
+// TODO: Determine whether to add interceptor that always returns GraphQL ExecutionContext
+
 import { ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { AuthGuard } from "@nestjs/passport";

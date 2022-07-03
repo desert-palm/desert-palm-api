@@ -1,3 +1,5 @@
+// TODO: Determine whether this can still be used in resolvers
+
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";

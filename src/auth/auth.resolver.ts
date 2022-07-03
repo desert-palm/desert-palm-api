@@ -1,40 +1,52 @@
-import { UseGuards } from "@nestjs/common";
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { hash } from "bcrypt";
-import { UsersService } from "../users/users.service";
+import { UseGuards, UseInterceptors } from "@nestjs/common";
+import {
+  Args,
+  Context,
+  GqlExecutionContext,
+  Mutation,
+  Query,
+  Resolver,
+} from "@nestjs/graphql";
+import { Request } from "express";
+import { User } from "../users/models/user.model";
 import { AuthService } from "./auth.service";
 import { GqlAuthGuard } from "./guards/gql-auth.guard";
-import { AuthPayload } from "./models/auth.payload";
+import { ClearAuthCookieInterceptor } from "./interceptors/clear-auth-cookie.interceptor";
+import { SetAuthCookieInterceptor } from "./interceptors/set-auth-cookie.interceptor";
 import { LoginInput } from "./models/login.input";
 import { SignUpInput } from "./models/sign-up.input";
 
-const SALT_ROUNDS = 10;
+interface AuthContext extends GqlExecutionContext {
+  req: {
+    user: User;
+  } & Request;
+}
 
 @Resolver()
 export class AuthResolver {
-  constructor(
-    private authService: AuthService,
-    private usersService: UsersService
-  ) {}
+  constructor(private authService: AuthService) {}
 
-  @Mutation(() => AuthPayload)
-  async login(@Args("input") { email, password }: LoginInput) {
-    const user = await this.authService.validateUser(email, password);
-    return this.authService.login(user.id);
+  @Mutation(() => Boolean)
+  @UseInterceptors(SetAuthCookieInterceptor)
+  async login(@Args("input") input: LoginInput) {
+    return this.authService.login(input);
   }
 
-  @Mutation(() => AuthPayload)
-  async signUp(@Args("input") { password, ...rest }: SignUpInput) {
-    const passwordHash = await hash(password, SALT_ROUNDS);
-    const user = await this.usersService.createUser({
-      ...rest,
-      password: passwordHash,
-    });
-    return this.authService.login(user.id);
+  @Mutation(() => Boolean)
+  @UseInterceptors(SetAuthCookieInterceptor)
+  async signUp(@Args("input") input: SignUpInput) {
+    return this.authService.signUp(input);
   }
 
+  @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
+  @UseInterceptors(ClearAuthCookieInterceptor)
+  async logOut(@Context() context: AuthContext) {
+    return this.authService.logOut(context.req.user.id);
+  }
+
   @Query(() => Boolean)
+  @UseGuards(GqlAuthGuard)
   async authCheck() {
     return true;
   }
