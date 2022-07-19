@@ -3,9 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { deleteImage } from "../images/image.utils";
 import { ImagesService } from "../images/images.service";
-import { CreateProductDto } from "./dto/createProduct.dto";
-import { UpdateProductDto } from "./dto/updateProduct.dto";
-import { Product } from "./product.entity";
+import { ProductInput } from "./models/product-input.model";
+import { Product } from "./models/product.model";
 
 @Injectable()
 export class ProductsService {
@@ -16,8 +15,9 @@ export class ProductsService {
     private readonly imagesService: ImagesService
   ) {}
 
-  async getProduct(productId: number, withImages?: boolean) {
-    return this.repository.findOne(productId, {
+  async getProduct(id: number, withImages?: boolean) {
+    return this.repository.findOne({
+      where: { id },
       relations: withImages ? ["images"] : [],
     });
   }
@@ -26,13 +26,13 @@ export class ProductsService {
     return this.repository.find({ relations: withImages ? ["images"] : [] });
   }
 
-  async createProduct(data: CreateProductDto) {
+  async createProduct(data: ProductInput) {
     return this.repository.save(data);
   }
 
-  async updateProduct(productId: number, data: UpdateProductDto) {
+  async updateProduct(productId: number, data: ProductInput) {
     await this.repository.update(productId, data);
-    return this.getProduct(productId, true);
+    return this.getProduct(productId);
   }
 
   async saveProductImages(productId: number, images: Express.Multer.File[]) {
@@ -54,7 +54,7 @@ export class ProductsService {
     for (const { filename } of images) {
       await deleteImage(filename);
     }
-
-    return this.repository.delete(productId);
+    this.repository.delete(productId);
+    return true;
   }
 }

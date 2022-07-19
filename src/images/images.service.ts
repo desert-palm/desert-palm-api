@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Image } from "./image.entity";
 import { deleteImage } from "./image.utils";
+import { Image } from "./models/image.model";
 
 @Injectable()
 export class ImagesService {
@@ -11,8 +11,8 @@ export class ImagesService {
     private repository: Repository<Image>
   ) {}
 
-  async getImage(imageId: number) {
-    return this.repository.findOne(imageId);
+  async getImage(id: number) {
+    return this.repository.findOne({ where: { id } });
   }
 
   async getImages() {
@@ -24,7 +24,7 @@ export class ImagesService {
   }
 
   async saveImages(images: Express.Multer.File[]) {
-    const savedImages = [];
+    const savedImages: Image[] = [];
 
     for (const { filename } of images) {
       const image = await this.createImage({ filename });
@@ -37,7 +37,7 @@ export class ImagesService {
   async deleteImage(imageId: number) {
     const { filename } = await this.getImage(imageId);
     await deleteImage(filename);
-
-    return this.repository.delete(imageId);
+    this.repository.delete(imageId);
+    return true;
   }
 }

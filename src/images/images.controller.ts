@@ -1,6 +1,5 @@
 import {
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -11,19 +10,14 @@ import {
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { UploadImages } from "./decorators/uploadImages.decorator";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { UploadImages } from "./decorators/upload-images.decorator";
 import { ImagesService } from "./images.service";
 
 @ApiTags("images")
 @Controller("images")
 export class ImagesController {
   constructor(private readonly service: ImagesService) {}
-
-  @Get()
-  async getImages() {
-    return this.service.getImages();
-  }
 
   @Get(":imageId/view")
   async getImageFile(
@@ -36,13 +30,8 @@ export class ImagesController {
 
   @Post()
   @UploadImages()
+  @UseGuards(JwtAuthGuard)
   async uploadImages(@UploadedFiles() images: Express.Multer.File[]) {
     return this.service.saveImages(images);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(":imageId")
-  async deleteImage(@Param("imageId", ParseIntPipe) imageId: number) {
-    this.service.deleteImage(imageId);
   }
 }
