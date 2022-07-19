@@ -15,9 +15,13 @@ export class UsersService {
   }
 
   async getUserById(id: number): Promise<Omit<User, "password">> {
-    const { password: _password, ...rest } =
-      await this.usersRepository.findOneByOrFail({ id });
-    return rest;
+    try {
+      const { password: _password, ...rest } =
+        await this.usersRepository.findOneByOrFail({ id });
+      return rest;
+    } catch {
+      throw new Error("Failed to find user");
+    }
   }
 
   async getUsers() {
