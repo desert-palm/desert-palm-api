@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { deleteImage } from "../images/image.utils";
 import { ImagesService } from "../images/images.service";
+import { Image } from "../images/models/image.model";
 import { ProductInput } from "./models/product-input.model";
 import { Product } from "./models/product.model";
 
@@ -36,7 +37,7 @@ export class ProductsService {
   }
 
   async saveProductImages(productId: number, images: Express.Multer.File[]) {
-    const savedImages = [];
+    const savedImages: Image[] = [];
 
     for (const { filename } of images) {
       const image = await this.imagesService.createImage({
