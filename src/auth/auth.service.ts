@@ -41,11 +41,6 @@ export class AuthService {
     return this.generateTokens(user.id);
   }
 
-  async logOut({ id }: User) {
-    await this.refreshTokensService.revokeAllRefreshTokensForUser(id);
-    return true;
-  }
-
   async generateTokens(userId: number): Promise<AuthCookiePayload> {
     const access_token = await this.generateAccessToken(userId);
     const { refresh_token } =
