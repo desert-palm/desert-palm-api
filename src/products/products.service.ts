@@ -24,7 +24,12 @@ export class ProductsService {
   }
 
   async getProducts(withImages?: boolean) {
-    return this.repository.find({ relations: withImages ? ["images"] : [] });
+    const products = await this.repository.find({
+      relations: withImages ? ["images"] : [],
+    });
+    return products.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   }
 
   async createProduct(data: ProductInput) {
