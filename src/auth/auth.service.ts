@@ -41,11 +41,6 @@ export class AuthService {
     return this.generateTokens(user.id);
   }
 
-  async logOut({ id }: User) {
-    await this.refreshTokensService.revokeAllRefreshTokensForUser(id);
-    return true;
-  }
-
   async generateTokens(userId: number): Promise<AuthCookiePayload> {
     const access_token = await this.generateAccessToken(userId);
     const { refresh_token } =
@@ -59,15 +54,19 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<Partial<User>> {
     try {
       const user = await this.usersService.getUser({ where: { email } });
-      const passwordMatch = await compare(password, user.password);
-
-      if (user && passwordMatch) {
-        const { password: _password, ...result } = user;
-        return result;
+      if (!user) {
+        throw new ValidationError("User not found");
       }
-      return null;
-    } catch {
-      throw new ValidationError("Failed to validate user");
+
+      const passwordMatch = await compare(password, user.password);
+      if (!passwordMatch) {
+        throw new ValidationError("Incorrect username or password");
+      }
+
+      const { password: _password, ...result } = user;
+      return result;
+    } catch (err) {
+      throw new ValidationError(err);
     }
   }
 

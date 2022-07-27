@@ -1,8 +1,6 @@
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { User } from "../users/models/user.model";
 import { AuthService } from "./auth.service";
-import { CurrentUser } from "./decorators/current-user.decorator";
 import { GqlAuthGuard } from "./guards/gql-auth.guard";
 import { ClearAuthCookieInterceptor } from "./interceptors/clear-auth-cookie.interceptor";
 import { SetAuthCookieInterceptor } from "./interceptors/set-auth-cookie.interceptor";
@@ -26,10 +24,9 @@ export class AuthResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(GqlAuthGuard)
   @UseInterceptors(ClearAuthCookieInterceptor)
-  async logOut(@CurrentUser() user: User) {
-    return this.authService.logOut(user);
+  async logOut() {
+    return true;
   }
 
   @Query(() => Boolean)

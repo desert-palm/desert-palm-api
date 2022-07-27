@@ -13,8 +13,8 @@ export class UsersResolver {
 
   @Query(() => User)
   @UseGuards(GqlAuthGuard)
-  me(@CurrentUser() { id }: User) {
-    return this.service.getUserById(id);
+  me(@CurrentUser() user: User) {
+    return user;
   }
 
   @Query(() => User)
